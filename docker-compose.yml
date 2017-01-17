@@ -1,0 +1,48 @@
+version: "2"
+services:
+  nginx:
+    build: ./nginx
+    links:
+      - server1:server1
+      - server2:server2
+      - server3:server3
+    ports:
+      - "80:80"
+  server1:
+    build: ./server
+    ports:
+      - "8000"
+    links:
+      - redis
+  server2:
+    build: ./server
+    ports:
+      - "8000"
+    links:
+      - redis
+  server3:
+    build: ./server
+    ports:
+      - "8000"
+    links:
+      - redis
+  worker:
+    build: ./worker
+    links:
+      - mongo
+      - redis
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes_from:
+      - mongodata
+  mongodata:
+    image: tianon/true
+    volumes:
+      - /data/db
+    command: "/true"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
